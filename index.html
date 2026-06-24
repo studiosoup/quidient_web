@@ -35,8 +35,6 @@
       <button type="button" id="refresh-button" aria-label="Refresh scores">
         <img src="src/refresh-arrow.png" alt="" width="20" height="20">
       </button>
-      <button type="button" id="sort-desc" class="active">Sort DESC</button>
-      <button type="button" id="sort-asc">Sort ASC</button>
     </div>
 
     <table id="leaderboard-table" hidden>
@@ -64,7 +62,6 @@
       const TIMEOUT_MS = 8000;
 
       let entries = [];
-      let sortDirection = 'desc';
       let isLoading = false;
       let hasError = false;
 
@@ -75,8 +72,6 @@
       const tableEl = document.getElementById('leaderboard-table');
       const tbodyEl = document.getElementById('leaderboard-body');
       const retryButton = document.getElementById('retry-button');
-      const sortDescButton = document.getElementById('sort-desc');
-      const sortAscButton = document.getElementById('sort-asc');
 
       function setLoading(loading) {
         isLoading = loading;
@@ -113,7 +108,7 @@
 
       function sortEntries() {
         entries.sort(function (a, b) {
-          return sortDirection === 'asc' ? a.score - b.score : b.score - a.score;
+          return b.score - a.score;
         });
       }
 
@@ -163,23 +158,6 @@
         });
       }
 
-      function updateSortButtons() {
-        if (sortDirection === 'asc') {
-          sortAscButton.classList.add('active');
-          sortDescButton.classList.remove('active');
-        } else {
-          sortDescButton.classList.add('active');
-          sortAscButton.classList.remove('active');
-        }
-      }
-
-      function handleSort(direction) {
-        sortDirection = direction;
-        updateSortButtons();
-        sortEntries();
-        render();
-      }
-
       async function fetchLeaderboard() {
         if (isLoading) return;
         setLoading(true);
@@ -214,8 +192,6 @@
 
       retryButton.addEventListener('click', fetchLeaderboard);
       document.getElementById('refresh-button').addEventListener('click', fetchLeaderboard);
-      sortDescButton.addEventListener('click', function () { handleSort('desc'); });
-      sortAscButton.addEventListener('click', function () { handleSort('asc'); });
 
       fetchLeaderboard();
     })();
