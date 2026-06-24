@@ -191,13 +191,6 @@ tbody tr:hover { background: rgba(34, 197, 94, 0.15); }
 .medal { margin-left: 0.4rem; }
 .score { font-variant-numeric: tabular-nums; text-align: right; }
 
-footer {
-  text-align: center;
-  padding: 1.5rem;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
 [hidden] { display: none !important; }
 
 @media (max-width: 768px) {
@@ -223,6 +216,7 @@ footer {
     align-items: center;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--table-border);
+    gap: 0.5rem;
   }
   td:last-child { border-bottom: none; }
   td::before {
@@ -233,4 +227,49 @@ footer {
     font-size: 0.75rem;
   }
   .score { text-align: left; }
+  #sort-controls button, #refresh-button { min-height: 44px; }
+  tbody tr { min-height: 44px; }
 }
+
+#refresh-button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+#refresh-button:hover { filter: brightness(1.1); }
+#refresh-button:active { opacity: 0.8; }
+#refresh-button img { 
+  pointer-events: none;
+  filter: invert(1); 
+}
+
+#sort-controls { flex-wrap: wrap; }
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.footer-brand:hover { color: var(--accent); }
+.footer-brand img { height: 20px; width: auto; }
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+td, th { min-height: 44px; }
+
+html, body { overflow-x: hidden; }

@@ -32,6 +32,9 @@
     </div>
 
     <div id="sort-controls" hidden>
+      <button type="button" id="refresh-button" aria-label="Refresh scores">
+        <img src="src/refresh-arrow.png" alt="" width="20" height="20">
+      </button>
       <button type="button" id="sort-desc" class="active">Sort DESC</button>
       <button type="button" id="sort-asc">Sort ASC</button>
     </div>
@@ -49,7 +52,10 @@
   </main>
 
   <footer>
-    <p><a href="https://quidient.com/" target="_blank" rel="noopener" class="brand-link">Quidient — Minigame</a></p>
+    <a href="https://quidient.com/" target="_blank" rel="noopener" class="footer-brand">
+      <img src="src/Quidient-mini-logo-footer.png" alt="Quidient"> Quidient
+    </a>
+    <span> — Minigame</span>
   </footer>
 
   <script>
@@ -207,6 +213,7 @@
       }
 
       retryButton.addEventListener('click', fetchLeaderboard);
+      document.getElementById('refresh-button').addEventListener('click', fetchLeaderboard);
       sortDescButton.addEventListener('click', function () { handleSort('desc'); });
       sortAscButton.addEventListener('click', function () { handleSort('asc'); });
 
