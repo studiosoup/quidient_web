@@ -34,6 +34,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
+  background: rgba(34, 197, 94, 0.1);
 }
 
 .header-brand {
@@ -56,6 +57,11 @@ header {
 
 .brand-link:hover {
   text-decoration: underline;
+}
+
+.header-logo-text {
+  height: 32px;
+  width: auto;
 }
 
 header h1 {
