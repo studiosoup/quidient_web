@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <header>
     <div class="header-brand">
       <img src="src/Logo.png" alt="Quidient Logo" class="logo">
@@ -58,145 +59,150 @@
     <span> — Minigame</span>
   </footer>
 
-  <script>
-    (function () {
-      const API_URL = 'https://corsproxy.io/?http://dreamlo.com/lb/6a2c62ce8f40bb1318990cf5/json';
-      const TIMEOUT_MS = 8000;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-      let entries = [];
-      let isLoading = false;
-      let hasError = false;
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnSJyXgUVsq9RCXi-e2NSqUIapxXfrwPo",
+      authDomain: "quidient-mobile-b411c.firebaseapp.com",
+      projectId: "quidient-mobile-b411c",
+      storageBucket: "quidient-mobile-b411c.firebasestorage.app",
+      messagingSenderId: "1041850708115",
+      appId: "1:1041850708115:web:800e087fe97741b7f85d66"
+    };
 
-      const loadingEl = document.getElementById('loading');
-      const errorEl = document.getElementById('error');
-      const emptyEl = document.getElementById('empty');
-      const sortControlsEl = document.getElementById('sort-controls');
-      const tableEl = document.getElementById('leaderboard-table');
-      const tbodyEl = document.getElementById('leaderboard-body');
-      const retryButton = document.getElementById('retry-button');
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      function setLoading(loading) {
-        isLoading = loading;
-        loadingEl.hidden = !loading;
-        if (loading) {
-          errorEl.hidden = true;
-          emptyEl.hidden = true;
-          sortControlsEl.hidden = true;
-          tableEl.hidden = true;
-        }
-      }
+    const TIMEOUT_MS = 8000;
+    const MAX_ENTRIES = 50;
 
-      function setError(error) {
-        hasError = error;
-        errorEl.hidden = !error;
-      }
+    let entries = [];
+    let isLoading = false;
+    let hasError = false;
 
-      function normalizeEntries(data) {
-        if (!data || !data.dreamlo || !data.dreamlo.leaderboard) {
-          return [];
-        }
-        const raw = data.dreamlo.leaderboard.entry;
-        if (!raw) {
-          return [];
-        }
-        const list = Array.isArray(raw) ? raw : [raw];
-        return list.map(function (entry) {
-          return {
-            name: String(entry.name || 'Anonymous'),
-            score: Number(entry.score) || 0
-          };
-        });
-      }
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const emptyEl = document.getElementById('empty');
+    const sortControlsEl = document.getElementById('sort-controls');
+    const tableEl = document.getElementById('leaderboard-table');
+    const tbodyEl = document.getElementById('leaderboard-body');
+    const retryButton = document.getElementById('retry-button');
 
-      function sortEntries() {
-        entries.sort(function (a, b) {
-          return b.score - a.score;
-        });
-      }
-
-      function getRankContent(rank) {
-        if (rank === 1) return rank + '<span class="medal" aria-hidden="true">🥇</span>';
-        if (rank === 2) return rank + '<span class="medal" aria-hidden="true">🥈</span>';
-        if (rank === 3) return rank + '<span class="medal" aria-hidden="true">🥉</span>';
-        return String(rank);
-      }
-
-      function render() {
-        tbodyEl.innerHTML = '';
-
-        if (entries.length === 0) {
-          emptyEl.hidden = false;
-          sortControlsEl.hidden = true;
-          tableEl.hidden = true;
-          return;
-        }
-
+    function setLoading(loading) {
+      isLoading = loading;
+      loadingEl.hidden = !loading;
+      if (loading) {
+        errorEl.hidden = true;
         emptyEl.hidden = true;
-        sortControlsEl.hidden = false;
-        tableEl.hidden = false;
+        sortControlsEl.hidden = true;
+        tableEl.hidden = true;
+      }
+    }
 
-        entries.forEach(function (entry, index) {
-          const rank = index + 1;
-          const row = document.createElement('tr');
+    function setError(error) {
+      hasError = error;
+      errorEl.hidden = !error;
+    }
 
-          const rankCell = document.createElement('td');
-          rankCell.className = 'rank';
-          rankCell.setAttribute('data-label', 'Rank');
-          rankCell.innerHTML = getRankContent(rank);
+    function getRankContent(rank) {
+      if (rank === 1) return rank + '<span class="medal" aria-hidden="true">🥇</span>';
+      if (rank === 2) return rank + '<span class="medal" aria-hidden="true">🥈</span>';
+      if (rank === 3) return rank + '<span class="medal" aria-hidden="true">🥉</span>';
+      return String(rank);
+    }
 
-          const nameCell = document.createElement('td');
-          nameCell.setAttribute('data-label', 'Player');
-          nameCell.textContent = entry.name;
+    function render() {
+      tbodyEl.innerHTML = '';
 
-          const scoreCell = document.createElement('td');
-          scoreCell.className = 'score';
-          scoreCell.setAttribute('data-label', 'Score');
-          scoreCell.textContent = entry.score.toLocaleString();
+      if (entries.length === 0) {
+        emptyEl.hidden = false;
+        sortControlsEl.hidden = true;
+        tableEl.hidden = true;
+        return;
+      }
 
-          row.appendChild(rankCell);
-          row.appendChild(nameCell);
-          row.appendChild(scoreCell);
-          tbodyEl.appendChild(row);
+      emptyEl.hidden = true;
+      sortControlsEl.hidden = false;
+      tableEl.hidden = false;
+
+      entries.forEach(function (entry, index) {
+        const rank = index + 1;
+        const row = document.createElement('tr');
+
+        const rankCell = document.createElement('td');
+        rankCell.className = 'rank';
+        rankCell.setAttribute('data-label', 'Rank');
+        rankCell.innerHTML = getRankContent(rank);
+
+        const nameCell = document.createElement('td');
+        nameCell.setAttribute('data-label', 'Player');
+        nameCell.textContent = entry.name;
+
+        const scoreCell = document.createElement('td');
+        scoreCell.className = 'score';
+        scoreCell.setAttribute('data-label', 'Score');
+        scoreCell.textContent = entry.score.toLocaleString();
+
+        row.appendChild(rankCell);
+        row.appendChild(nameCell);
+        row.appendChild(scoreCell);
+        tbodyEl.appendChild(row);
+      });
+    }
+
+    function withTimeout(promise, ms) {
+      return new Promise(function (resolve, reject) {
+        const timer = setTimeout(function () {
+          reject(new Error('Request timed out after ' + ms + 'ms'));
+        }, ms);
+        promise.then(
+          function (value) { clearTimeout(timer); resolve(value); },
+          function (err) { clearTimeout(timer); reject(err); }
+        );
+      });
+    }
+
+    async function fetchLeaderboard() {
+      if (isLoading) return;
+      setLoading(true);
+      setError(false);
+
+      try {
+        const leaderboardQuery = query(
+          collection(db, "leaderboard"),
+          where("score", ">", 0),
+          orderBy("score", "desc"),
+          orderBy("name", "asc"),
+          limit(MAX_ENTRIES)
+        );
+        const querySnapshot = await withTimeout(getDocs(leaderboardQuery), TIMEOUT_MS);
+
+        entries = [];
+        querySnapshot.forEach(function (doc) {
+          const data = doc.data();
+          const rawName = typeof data.name === 'string' ? data.name.trim() : '';
+          entries.push({
+            name: rawName || 'Anonymous',
+            score: Number(data.score) || 0
+          });
         });
+
+        render();
+      } catch (err) {
+        console.error('Leaderboard fetch failed:', err);
+        entries = [];
+        setError(true);
+      } finally {
+        setLoading(false);
       }
+    }
 
-      async function fetchLeaderboard() {
-        if (isLoading) return;
-        setLoading(true);
-        setError(false);
+    retryButton.addEventListener('click', fetchLeaderboard);
+    document.getElementById('refresh-button').addEventListener('click', fetchLeaderboard);
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(function () {
-          controller.abort();
-        }, TIMEOUT_MS);
-
-        try {
-          const response = await fetch(API_URL, { signal: controller.signal });
-          clearTimeout(timeoutId);
-
-          if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
-          }
-
-          const data = await response.json();
-          entries = normalizeEntries(data);
-          sortEntries();
-          render();
-        } catch (err) {
-          console.error('Leaderboard fetch failed:', err);
-          entries = [];
-          setError(true);
-        } finally {
-          clearTimeout(timeoutId);
-          setLoading(false);
-        }
-      }
-
-      retryButton.addEventListener('click', fetchLeaderboard);
-      document.getElementById('refresh-button').addEventListener('click', fetchLeaderboard);
-
-      fetchLeaderboard();
-    })();
+    fetchLeaderboard();
   </script>
 </body>
 </html>
